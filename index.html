@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeBB — Vibe BreadBoarding</title>
+  <meta name="description" content="VibeBB is Vibe BreadBoarding: say what you want to build, and AI designs the board, enclosure, and firmware — verified by deterministic gates, not vibes.">
+  <link rel="icon" type="image/svg+xml" href="assets/vibebb-silkscreen.svg">
+  <style>
+    :root {
+      --bg: #07130f;
+      --bg-soft: #0b1d17;
+      --panel: #0e241c;
+      --line: #1d4034;
+      --copper: #e8a33d;
+      --silk: #f2f7f4;
+      --muted: #9db8ad;
+      --accent: #3ddc97;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--silk);
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.65;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(7, 19, 15, 0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+    }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.04em; color: var(--silk); }
+    .brand img { height: 28px; }
+    nav ul { display: flex; gap: 22px; list-style: none; }
+    nav ul a { color: var(--muted); font-size: 0.95rem; }
+    nav ul a:hover { color: var(--silk); text-decoration: none; }
+
+    .hero {
+      position: relative;
+      padding: 96px 0 80px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(61, 220, 151, 0.12), transparent),
+        linear-gradient(var(--bg) 0%, var(--bg-soft) 100%);
+      border-bottom: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(61, 220, 151, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(61, 220, 151, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .hero .wrap { position: relative; text-align: center; }
+    .hero img.logo { width: min(420px, 80vw); margin-bottom: 36px; filter: drop-shadow(0 0 24px rgba(61, 220, 151, 0.25)); }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: 0.02em; }
+    .hero h1 span { color: var(--accent); }
+    .hero p.tagline { margin: 18px auto 0; max-width: 640px; color: var(--muted); font-size: 1.15rem; }
+    .cta { margin-top: 36px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 12px 28px; border-radius: 6px;
+      font-weight: 600; letter-spacing: 0.02em;
+    }
+    .btn-primary { background: var(--accent); color: #04110b; }
+    .btn-primary:hover { background: #55e8a8; text-decoration: none; }
+    .btn-ghost { border: 1px solid var(--line); color: var(--silk); }
+    .btn-ghost:hover { border-color: var(--accent); text-decoration: none; }
+
+    section { padding: 72px 0; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    .kicker { color: var(--copper); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.18em; font-weight: 700; }
+    .lede { color: var(--muted); max-width: 720px; margin-bottom: 40px; }
+
+    .loop { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+    .loop .step {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+      padding: 24px 20px;
+    }
+    .loop .step .num { color: var(--copper); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; }
+    .loop .step h3 { margin: 8px 0 6px; font-size: 1.05rem; }
+    .loop .step p { color: var(--muted); font-size: 0.92rem; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+      padding: 26px 22px;
+    }
+    .card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    blockquote {
+      margin: 0 auto; max-width: 760px;
+      background: var(--panel); border-left: 3px solid var(--copper);
+      padding: 28px 32px; border-radius: 0 10px 10px 0;
+      font-size: 1.1rem; font-style: italic;
+    }
+    blockquote footer { margin-top: 12px; font-style: normal; color: var(--muted); font-size: 0.9rem; }
+
+    .lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+    footer.site {
+      padding: 40px 0 48px; color: var(--muted); font-size: 0.85rem;
+      text-align: center;
+    }
+    footer.site p + p { margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <a class="brand" href="#">
+        <img src="assets/vibebb-silkscreen.svg" alt="VibeBB logo">
+        VibeBB
+      </a>
+      <ul>
+        <li><a href="#what">What is VibeBB</a></li>
+        <li><a href="#loop">The Loop</a></li>
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#acd">Powered by ACD</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <img class="logo" src="assets/vibebb-silkscreen.svg" alt="VibeBB — Vibe BreadBoarding silkscreen logo">
+      <h1>Say it. <span>Build it.</span> Test it for real.</h1>
+      <p class="tagline">
+        VibeBB is <strong>Vibe BreadBoarding</strong>: describe what you want in plain language,
+        and AI designs the circuit board, enclosure, and firmware — with pass/fail decided by
+        deterministic gates and real-hardware evidence, never by vibes.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/uist1idrju3i/acd-agent">Get Started with ACD</a>
+        <a class="btn btn-ghost" href="#what">Learn More</a>
+      </div>
+    </div>
+  </div>
+
+  <section id="what">
+    <div class="wrap">
+      <p class="kicker">The Idea</p>
+      <h2>What is VibeBB?</h2>
+      <p class="lede">
+        Vibe Coding let developers fully give in to the vibes and forget the code even exists.
+        VibeBB brings that same conversational loop — <em>see stuff, say stuff, run stuff</em> —
+        to hardware prototyping: boards, enclosures, and firmware.
+      </p>
+      <div class="cards">
+        <div class="card">
+          <h3>No schematics required</h3>
+          <p>
+            Just as breadboards made it possible to think by trying — no soldering needed —
+            VibeBB lets you tell the AI what you want to build. Component selection, circuit
+            intent, board layout, enclosure, firmware, and fabrication outputs all follow from
+            the conversation. Not drawing schematics is the hardware counterpart of not reading
+            the code in Vibe Coding.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Heavy verification, hidden</h3>
+          <p>
+            VibeBB doesn't mean the design or verification is light — it means the heavy
+            verification is hidden from your hands. Where original Vibe Coding skips review
+            entirely, VibeBB moves the reviewer's role from humans to deterministic gates
+            (ERC/DRC, geometry checks, independent re-reads) and measurements on real hardware.
+          </p>
+        </div>
+        <div class="card">
+          <h3>You judge the result, not the artwork</h3>
+          <p>
+            You stay the owner of the requirements. What you check isn't a schematic or copper
+            artwork — it's whether the board that arrives actually works and actually fits in
+            its enclosure. Feedback goes straight back into the next design revision.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="loop">
+    <div class="wrap">
+      <p class="kicker">The Experience</p>
+      <h2>The VibeBB Loop</h2>
+      <p class="lede">
+        Long desk studies take a back seat. The default cycle is to build first, verify on real
+        hardware, and immediately spin the next change.
+      </p>
+      <div class="loop">
+        <div class="step">
+          <p class="num">01</p>
+          <h3>Talk</h3>
+          <p>Describe what you want to build in natural language. The AI turns the conversation into verifiable requirements.</p>
+        </div>
+        <div class="step">
+          <p class="num">02</p>
+          <h3>AI designs, gates verify</h3>
+          <p>The AI proposes components, layout, enclosure, and firmware. Deterministic checkers — parsers, geometry, ERC/DRC, fab rules — decide pass or fail.</p>
+        </div>
+        <div class="step">
+          <p class="num">03</p>
+          <h3>Build &amp; try</h3>
+          <p>Fabrication data goes out; a real board and enclosure come back. You power it up and see if it works and fits.</p>
+        </div>
+        <div class="step">
+          <p class="num">04</p>
+          <h3>Feed it back</h3>
+          <p>Measurements and real-hardware findings flow back into the design inputs for the next revision. Then the loop runs again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <blockquote>
+        &ldquo;Fully give in to the vibes, embrace exponentials, and forget that the code even exists.&rdquo;
+        <footer>
+          — Andrej Karpathy, <a href="https://x.com/karpathy/status/1886192184808149383">on Vibe Coding (Feb 2025)</a>.
+          VibeBB carries this loop into physical prototypes.
+        </footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <section id="principles">
+    <div class="wrap">
+      <p class="kicker">Why Trust It</p>
+      <h2>Vibes propose. Gates decide.</h2>
+      <p class="lede">
+        Three design lanes advance in parallel from the same input files and git history,
+        trading requests with each other — and every outcome is judged by deterministic gates.
+      </p>
+      <div class="lanes cards">
+        <div class="card">
+          <h3>Board lane</h3>
+          <p>Components, circuit intent, placement and routing, ERC/DRC, fabrication outputs. No unverified copper is ever generated.</p>
+        </div>
+        <div class="card">
+          <h3>Enclosure lane</h3>
+          <p>Outline, component heights, fastening, interference, clearance, wall thickness, CAD output — judged by mechanical measurement gates.</p>
+        </div>
+        <div class="card">
+          <h3>Firmware lane</h3>
+          <p>Implementation, build, static checks, and virtual execution delegated to OpenHands' native software capabilities, with pin assignments kept consistent with the board.</p>
+        </div>
+      </div>
+      <div class="cards" style="margin-top: 16px;">
+        <div class="card">
+          <h3>Fail-closed by design</h3>
+          <p>Missing tools, parse failures, skipped gates, and unknowns all fail closed. Passing evidence is only produced by digest-pinned container runs.</p>
+        </div>
+        <div class="card">
+          <h3>Rationale on record</h3>
+          <p>Every value the AI chose — parts, widths, dimensions, pins — is stored as a typed rationale record alongside the design, so &ldquo;why this?&rdquo; is answerable revisions later.</p>
+        </div>
+        <div class="card">
+          <h3>Files and git are the truth</h3>
+          <p>Schematics, PCBs, and drawings are projections generated from input files. Projections never flow back into the source of truth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="acd">
+    <div class="wrap">
+      <p class="kicker">Under the Hood</p>
+      <h2>Powered by ACD — Autonomous Computer Design</h2>
+      <p class="lede">
+        VibeBB is the experience; <a href="https://github.com/uist1idrju3i/acd-agent">ACD</a> is
+        the engine. ACD is an AI-first CAD built on OpenHands that inverts the traditional
+        EDA/MCAD model: the AI is the primary designer, and humans own the requirements. The name
+        ACD is an anagram of CAD, symbolizing that role reversal.
+      </p>
+      <div class="cta" style="justify-content: flex-start;">
+        <a class="btn btn-primary" href="https://github.com/uist1idrju3i/acd-agent">View ACD on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap">
+      <p>VibeBB — Vibe BreadBoarding. Built on <a href="https://github.com/uist1idrju3i/acd-agent">ACD (Autonomous Computer Design)</a>.</p>
+      <p>Logo artwork from the <a href="https://github.com/uist1idrju3i/acd-agent">acd-agent</a> project, BSD 3-Clause License, Copyright (c) 2026, Y.Yamashiro.</p>
+    </div>
+  </footer>
+</body>
+</html>
