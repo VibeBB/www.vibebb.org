@@ -12,7 +12,7 @@ VibeBB is "Vibe BreadBoarding": describe what you want to build in
 natural language, and AI designs the circuit board, enclosure, and
 firmware — with pass/fail decided by deterministic gates and
 real-hardware evidence, not by vibes. This repository is the source of
-the site at [www.vibebb.org](https://www.vibebb.org).
+the site at [vibebb.org](https://vibebb.org).
 
 ### What is VibeBB?
 
@@ -181,7 +181,7 @@ implementation scope.
 VibeBBは「Vibe BreadBoarding」――作りたいものを自然言語で伝えると、
 AIが回路基板・筐体・ファームウェアを設計し、合否は決定論的ゲートと
 実機エビデンスが判定します。このリポジトリは
-[www.vibebb.org](https://www.vibebb.org)のサイトのソースです。
+[vibebb.org](https://vibebb.org)のサイトのソースです。
 
 ### VibeBBとは？
 
