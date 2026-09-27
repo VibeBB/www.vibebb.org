@@ -4,9 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VibeBB — Vibe BreadBoarding</title>
-  <meta name="description" content="VibeBB is Vibe BreadBoarding: say what you want to build, and AI designs the board, enclosure, and firmware — verified by deterministic gates, not vibes.">
+  <meta name="description" content="VibeBB is Vibe BreadBoarding: describe what you want to build in natural language, and AI designs the circuit board, enclosure, and firmware. Pass or fail is decided by deterministic gates and real-hardware evidence — not by vibes.">
+  <meta name="theme-color" content="#07130f">
+  <link rel="canonical" href="https://vibebb.org/">
   <link rel="icon" type="image/svg+xml" href="assets/vibebb-silkscreen.svg">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vibebb.org/">
+  <meta property="og:site_name" content="VibeBB">
+  <meta property="og:title" content="VibeBB — Vibe BreadBoarding">
+  <meta property="og:description" content="Describe what you want to build in natural language, and AI designs the circuit board, enclosure, and firmware. Pass or fail is decided by deterministic gates and real-hardware evidence — not by vibes.">
+  <meta property="og:image" content="https://vibebb.org/assets/vibebb-silkscreen.svg">
+  <meta property="og:image:alt" content="VibeBB silkscreen logo">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="VibeBB — Vibe BreadBoarding">
+  <meta name="twitter:description" content="Describe what you want to build in natural language, and AI designs the circuit board, enclosure, and firmware. Pass or fail is decided by deterministic gates and real-hardware evidence — not by vibes.">
+  <meta name="twitter:image" content="https://vibebb.org/assets/vibebb-silkscreen.svg">
+
   <style>
+    /* Tokens */
     :root {
       --bg: #07130f;
       --bg-soft: #0b1d17;
@@ -16,39 +32,53 @@
       --silk: #f2f7f4;
       --muted: #9db8ad;
       --accent: #3ddc97;
+      --accent-strong: #55e8a8;
+      --header-h: 60px;
     }
+
+    /* Reset & base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
     body {
       background: var(--bg);
       color: var(--silk);
-      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       line-height: 1.65;
     }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
 
-    header {
+    .skip-link {
+      position: absolute; left: 16px; top: -100px; z-index: 20;
+      padding: 8px 14px; border-radius: 6px;
+      background: var(--accent); color: #04110b; font-weight: 600;
+    }
+    .skip-link:focus { top: 12px; text-decoration: none; }
+
+    /* Header */
+    .site-header {
       position: sticky; top: 0; z-index: 10;
       background: rgba(7, 19, 15, 0.92);
       backdrop-filter: blur(6px);
       border-bottom: 1px solid var(--line);
     }
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .site-header nav { display: flex; align-items: center; justify-content: space-between; min-height: var(--header-h); padding: 10px 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.04em; color: var(--silk); }
+    .brand:hover { text-decoration: none; }
     .brand img { height: 28px; }
-    nav ul { display: flex; gap: 22px; list-style: none; }
-    nav ul a { color: var(--muted); font-size: 0.95rem; }
-    nav ul a:hover { color: var(--silk); text-decoration: none; }
+    .site-header ul { display: flex; gap: 22px; list-style: none; }
+    .site-header ul a { color: var(--muted); font-size: 0.95rem; }
+    .site-header ul a:hover { color: var(--silk); text-decoration: none; }
 
+    /* Hero */
     .hero {
       position: relative;
       padding: 96px 0 80px;
       background:
         radial-gradient(ellipse 80% 60% at 50% -10%, rgba(61, 220, 151, 0.12), transparent),
         linear-gradient(var(--bg) 0%, var(--bg-soft) 100%);
-      border-bottom: 1px solid var(--line);
       overflow: hidden;
     }
     .hero::before {
@@ -61,242 +91,351 @@
       pointer-events: none;
     }
     .hero .wrap { position: relative; text-align: center; }
-    .hero img.logo { width: min(420px, 80vw); margin-bottom: 36px; filter: drop-shadow(0 0 24px rgba(61, 220, 151, 0.25)); }
+    .hero .logo { width: min(420px, 80vw); margin-bottom: 36px; filter: drop-shadow(0 0 24px rgba(61, 220, 151, 0.25)); }
     .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: 0.02em; }
     .hero h1 span { color: var(--accent); }
-    .hero p.tagline { margin: 18px auto 0; max-width: 640px; color: var(--muted); font-size: 1.15rem; }
+    .hero .tagline { margin: 18px auto 0; max-width: 640px; color: var(--muted); font-size: 1.15rem; }
+
     .cta { margin-top: 36px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-block; padding: 12px 28px; border-radius: 6px;
       font-weight: 600; letter-spacing: 0.02em;
     }
+    .btn:hover { text-decoration: none; }
     .btn-primary { background: var(--accent); color: #04110b; }
-    .btn-primary:hover { background: #55e8a8; text-decoration: none; }
+    .btn-primary:hover { background: var(--accent-strong); }
     .btn-ghost { border: 1px solid var(--line); color: var(--silk); }
-    .btn-ghost:hover { border-color: var(--accent); text-decoration: none; }
+    .btn-ghost:hover { border-color: var(--accent); }
 
-    section { padding: 72px 0; border-bottom: 1px solid var(--line); }
-    h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    /* Sections */
+    section { padding: 72px 0; border-top: 1px solid var(--line); }
+    .section-head { margin-bottom: 40px; }
     .kicker { color: var(--copper); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.18em; font-weight: 700; }
-    .lede { color: var(--muted); max-width: 720px; margin-bottom: 40px; }
+    h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    .lede { color: var(--muted); max-width: 720px; }
+    .lede + .lede { margin-top: 14px; }
+    .note { color: var(--muted); max-width: 720px; margin-top: 28px; font-size: 0.95rem; }
 
-    .loop { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
-    .loop .step {
-      background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-      padding: 24px 20px;
-    }
-    .loop .step .num { color: var(--copper); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; }
-    .loop .step h3 { margin: 8px 0 6px; font-size: 1.05rem; }
-    .loop .step p { color: var(--muted); font-size: 0.92rem; }
-
+    /* Panels */
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .cards.loop { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+    .cards + .cards { margin-top: 16px; }
     .card {
       background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
       padding: 26px 22px;
     }
     .card h3 { font-size: 1.1rem; margin-bottom: 8px; }
     .card p { color: var(--muted); font-size: 0.95rem; }
+    .card .num { color: var(--copper); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; margin-bottom: 8px; }
+    .loop .card { padding: 24px 20px; }
+    .loop .card h3 { font-size: 1.05rem; }
+    .loop .card p { font-size: 0.92rem; }
 
-    blockquote {
-      margin: 0 auto; max-width: 760px;
+    .quote { margin: 0 auto; max-width: 760px; }
+    .quote blockquote {
       background: var(--panel); border-left: 3px solid var(--copper);
       padding: 28px 32px; border-radius: 0 10px 10px 0;
       font-size: 1.1rem; font-style: italic;
     }
-    blockquote footer { margin-top: 12px; font-style: normal; color: var(--muted); font-size: 0.9rem; }
+    .quote figcaption { margin-top: 12px; padding-left: 35px; color: var(--muted); font-size: 0.9rem; }
 
-    .lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-
-    footer.site {
-      padding: 40px 0 48px; color: var(--muted); font-size: 0.85rem;
-      text-align: center;
+    /* Footer */
+    .site-footer {
+      padding: 40px 0 48px; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 0.85rem; text-align: center;
     }
-    footer.site p + p { margin-top: 6px; }
+    .site-footer p + p { margin-top: 6px; }
 
+    /* Responsive & preferences */
     @media (max-width: 720px) {
-      nav { flex-direction: column; gap: 10px; padding: 12px 0; }
-      nav ul { gap: 14px; flex-wrap: wrap; justify-content: center; }
-      nav ul a { font-size: 0.85rem; }
+      .site-header nav { flex-direction: column; gap: 10px; padding: 12px 0; }
+      .site-header ul { gap: 14px; flex-wrap: wrap; justify-content: center; }
+      .site-header ul a { font-size: 0.85rem; }
+      .hero { padding: 64px 0 56px; }
+      section { padding: 56px 0; }
+      .section-head { margin-bottom: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <nav class="wrap">
-      <a class="brand" href="#">
-        <img src="assets/vibebb-silkscreen.svg" alt="VibeBB logo">
+  <a class="skip-link" href="#what">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="wrap" aria-label="Primary">
+      <a class="brand" href="#top">
+        <img src="assets/vibebb-silkscreen.svg" alt="">
         VibeBB
       </a>
       <ul>
         <li><a href="#what">What is VibeBB</a></li>
         <li><a href="#loop">The Loop</a></li>
         <li><a href="#principles">Principles</a></li>
-        <li><a href="#acd">Powered by ACD</a></li>
+        <li><a href="#memory">Memory</a></li>
+        <li><a href="#future">Future</a></li>
       </ul>
     </nav>
   </header>
 
-  <div class="hero">
-    <div class="wrap">
-      <img class="logo" src="assets/vibebb-silkscreen.svg" alt="VibeBB — Vibe BreadBoarding silkscreen logo">
-      <h1>Say it. <span>Build it.</span> Test it for real.</h1>
-      <p class="tagline">
-        VibeBB is <strong>Vibe BreadBoarding</strong>: describe what you want in plain language,
-        and AI designs the circuit board, enclosure, and firmware — with pass/fail decided by
-        deterministic gates and real-hardware evidence, never by vibes.
-      </p>
-      <div class="cta">
-        <a class="btn btn-primary" href="https://github.com/VibeBB/acd-agent">Get Started with ACD</a>
-        <a class="btn btn-ghost" href="#what">Learn More</a>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <img class="logo" src="assets/vibebb-silkscreen.svg" alt="VibeBB — Vibe BreadBoarding silkscreen logo">
+        <h1 id="hero-title">Say it. <span>Build it.</span> Test it for real.</h1>
+        <p class="tagline">
+          VibeBB is <strong>Vibe BreadBoarding</strong>: describe what you want to build in
+          natural language, and AI designs the circuit board, enclosure, and firmware.
+          Pass or fail is decided by deterministic gates and real-hardware evidence — not by vibes.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#what">Learn More</a>
+          <a class="btn btn-ghost" href="#loop">See the Loop</a>
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <section id="what">
-    <div class="wrap">
-      <p class="kicker">The Idea</p>
-      <h2>What is VibeBB?</h2>
-      <p class="lede">
-        Vibe Coding let developers fully give in to the vibes and forget the code even exists.
-        VibeBB brings that same conversational loop — <em>see stuff, say stuff, run stuff</em> —
-        to hardware prototyping: boards, enclosures, and firmware.
-      </p>
-      <div class="cards">
-        <div class="card">
-          <h3>No schematics required</h3>
-          <p>
-            Just as breadboards made it possible to think by trying — no soldering needed —
-            VibeBB lets you tell the AI what you want to build. Component selection, circuit
-            intent, board layout, enclosure, firmware, and fabrication outputs all follow from
-            the conversation. Not drawing schematics is the hardware counterpart of not reading
-            the code in Vibe Coding.
+    <section id="what" aria-labelledby="what-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">The Idea</p>
+          <h2 id="what-title">What is VibeBB?</h2>
+          <p class="lede">
+            Vibe Coding let developers fully give in to the vibes and forget that the code even
+            exists. VibeBB brings that same conversational loop — <em>see stuff, say stuff, run
+            stuff</em> — to hardware prototyping: boards, enclosures, and firmware. As
+            <a href="https://blog.collinsdictionary.com/language-lovers/collins-word-of-the-year-2025-ai-meets-authenticity-as-society-shifts/" rel="noopener">Collins Dictionary's 2025 Word of the Year</a>
+            shows, the experience of stating intent in natural language, looking at the result,
+            and giving the next instruction is spreading.
           </p>
-        </div>
-        <div class="card">
-          <h3>Heavy verification, hidden</h3>
-          <p>
-            VibeBB doesn't mean the design or verification is light — it means the heavy
-            verification is hidden from your hands. Where original Vibe Coding skips review
-            entirely, VibeBB moves the reviewer's role from humans to deterministic gates
-            (ERC/DRC, geometry checks, independent re-reads) and measurements on real hardware.
+          <p class="lede">
+            The AI is the primary designer: it handles requirements elicitation, part selection,
+            circuit design, board layout, enclosure design, firmware, manufacturing data, and
+            iteration driven by manufacturing and real-hardware feedback. Mass-production quality
+            and certification are not assumed — the goal is a working prototype, as fast as possible.
           </p>
+        </header>
+        <div class="cards">
+          <div class="card">
+            <h3>No schematics required</h3>
+            <p>
+              Just as the breadboard made it possible to try as you think — no soldering needed —
+              VibeBB lets you simply say what you want to build. Part selection, circuit design,
+              board layout, enclosure, firmware, and manufacturing data all follow from the
+              conversation. Not drawing a schematic is the hardware counterpart of not reading
+              the code in Vibe Coding.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Heavy verification, hidden</h3>
+            <p>
+              VibeBB doesn't mean design or verification is light — it means the heavy verification
+              is hidden from your hands.
+              <a href="https://simonwillison.net/2025/Mar/19/vibe-coding/" rel="noopener">Simon Willison</a>
+              distinguishes true Vibe Coding, where the artifact is never reviewed, from AI-assisted
+              work that includes review. VibeBB moves the reviewer's role from humans to
+              deterministic gates and real-hardware evidence.
+            </p>
+          </div>
+          <div class="card">
+            <h3>You judge the result, not the artwork</h3>
+            <p>
+              You stay the owner of the requirements, and can step in as a reviewer or make direct
+              fixes when needed. What you check isn't a schematic or copper artwork — it's whether
+              the board that arrives actually works and actually fits in its enclosure. Feedback
+              goes straight back into the next design revision.
+            </p>
+          </div>
         </div>
-        <div class="card">
-          <h3>You judge the result, not the artwork</h3>
-          <p>
-            You stay the owner of the requirements. What you check isn't a schematic or copper
-            artwork — it's whether the board that arrives actually works and actually fits in
-            its enclosure. Feedback goes straight back into the next design revision.
+      </div>
+    </section>
+
+    <section id="loop" aria-labelledby="loop-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">The Experience</p>
+          <h2 id="loop-title">The VibeBB Loop</h2>
+          <p class="lede">
+            Long desk studies take a back seat. The default cycle is to build first, check on real
+            hardware, and turn the next change around immediately.
           </p>
+        </header>
+        <div class="cards loop">
+          <div class="card">
+            <p class="num">01</p>
+            <h3>Describe</h3>
+            <p>Say what you want to build in natural language. The AI turns the conversation into verifiable requirements.</p>
+          </div>
+          <div class="card">
+            <p class="num">02</p>
+            <h3>AI designs, gates verify</h3>
+            <p>The AI proposes parts, layout, enclosure, and firmware. Deterministic gates decide pass or fail.</p>
+          </div>
+          <div class="card">
+            <p class="num">03</p>
+            <h3>Build &amp; try</h3>
+            <p>Manufacturing data goes out; a real board and enclosure come back. You power it up and see whether it works and fits.</p>
+          </div>
+          <div class="card">
+            <p class="num">04</p>
+            <h3>Feed it back</h3>
+            <p>Measurements and real-hardware findings flow back into the design inputs for the next revision. Then the loop runs again.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="loop">
-    <div class="wrap">
-      <p class="kicker">The Experience</p>
-      <h2>The VibeBB Loop</h2>
-      <p class="lede">
-        Long desk studies take a back seat. The default cycle is to build first, verify on real
-        hardware, and immediately spin the next change.
-      </p>
-      <div class="loop">
-        <div class="step">
-          <p class="num">01</p>
-          <h3>Talk</h3>
-          <p>Describe what you want to build in natural language. The AI turns the conversation into verifiable requirements.</p>
+    <section aria-label="Quote">
+      <div class="wrap">
+        <figure class="quote">
+          <blockquote>
+            &ldquo;Fully give in to the vibes, embrace exponentials, and forget that the code even exists.&rdquo;
+          </blockquote>
+          <figcaption>
+            — Andrej Karpathy, <a href="https://x.com/karpathy/status/1886192184808149383" rel="noopener">on Vibe Coding (Feb 2025)</a>.
+            VibeBB carries this loop into physical prototypes.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="principles" aria-labelledby="principles-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">Why Trust It</p>
+          <h2 id="principles-title">Vibes propose. Gates decide.</h2>
+          <p class="lede">
+            From the requirements dialogue through manufacturing and real-hardware feedback, the
+            agents proceed in parallel, exchanging opinions and requests with one another.
+            Firmware is delegated to OpenHands' native software development capability, so board,
+            enclosure, and firmware are designed and verified within the same interactive flow.
+          </p>
+        </header>
+        <div class="cards">
+          <div class="card">
+            <h3>Reviews advise, gates decide</h3>
+            <p>Each stage produces machine-readable and visual projections, which SDK subagents and vision review on a best-effort basis. Findings go to the fix loop as natural-language text; reviews hold no pass/fail authority.</p>
+          </div>
+          <div class="card">
+            <h3>Human review is optional</h3>
+            <p>By default the AI runs end to end, from requirements to manufacturing data. What you verify is not schematics or artwork, but whether the delivered board and enclosure actually work and fit.</p>
+          </div>
+          <div class="card">
+            <h3>Re-verifiable, not repeatable</h3>
+            <p>Unlike LLM-only CAD, the point isn't producing the same solution every time — it's that the produced design can be re-verified afterwards by deterministic measurement and independent parsers re-reading the output.</p>
+          </div>
         </div>
-        <div class="step">
-          <p class="num">02</p>
-          <h3>AI designs, gates verify</h3>
-          <p>The AI proposes components, layout, enclosure, and firmware. Deterministic checkers — parsers, geometry, ERC/DRC, fab rules — decide pass or fail.</p>
-        </div>
-        <div class="step">
-          <p class="num">03</p>
-          <h3>Build &amp; try</h3>
-          <p>Fabrication data goes out; a real board and enclosure come back. You power it up and see if it works and fits.</p>
-        </div>
-        <div class="step">
-          <p class="num">04</p>
-          <h3>Feed it back</h3>
-          <p>Measurements and real-hardware findings flow back into the design inputs for the next revision. Then the loop runs again.</p>
+        <div class="cards">
+          <div class="card">
+            <h3>Rationale on record</h3>
+            <p>Every value the AI chose — parts, placement, trace widths, silkscreen, stackup, design rules, net classes, safety boundaries, dimensions, pin assignments — is stored in the same git change as the design input, with the reason, rejected alternatives, driving requirements, and provenance.</p>
+          </div>
+          <div class="card">
+            <h3>Missing rationale is detected</h3>
+            <p>Attributes that express design decisions are classified as required or exempt; anything in neither class becomes <code>unclassified</code>. When a record no longer matches its subject, the reason must be recorded again.</p>
+          </div>
+          <div class="card">
+            <h3>Traceable revisions later</h3>
+            <p>&ldquo;Why this part?&rdquo;, &ldquo;why this trace width?&rdquo;, &ldquo;why this dimension?&rdquo; stay answerable to a different reader, several revisions on. Rationale explains; it never decides pass or fail.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section>
-    <div class="wrap">
-      <blockquote>
-        &ldquo;Fully give in to the vibes, embrace exponentials, and forget that the code even exists.&rdquo;
-        <footer>
-          — Andrej Karpathy, <a href="https://x.com/karpathy/status/1886192184808149383">on Vibe Coding (Feb 2025)</a>.
-          VibeBB carries this loop into physical prototypes.
-        </footer>
-      </blockquote>
-    </div>
-  </section>
-
-  <section id="principles">
-    <div class="wrap">
-      <p class="kicker">Why Trust It</p>
-      <h2>Vibes propose. Gates decide.</h2>
-      <p class="lede">
-        Three design lanes advance in parallel from the same input files and git history,
-        trading requests with each other — and every outcome is judged by deterministic gates.
-      </p>
-      <div class="lanes cards">
-        <div class="card">
-          <h3>Board lane</h3>
-          <p>Components, circuit intent, placement and routing, ERC/DRC, fabrication outputs. No unverified copper is ever generated.</p>
+    <section id="memory" aria-labelledby="memory-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">Across Conversations</p>
+          <h2 id="memory-title">It learns your conventions</h2>
+          <p class="lede">
+            VibeBB writes what it learns while working into OpenHands' persistent memory and reads
+            it back at the start of the next conversation, so proposals can start from the
+            conventions of previous designs without the same explanation being repeated every time.
+          </p>
+        </header>
+        <div class="cards">
+          <div class="card">
+            <h3>Parts and footprints</h3>
+            <p>The parts and part numbers frequently used in the repository, and how footprints and stackups are chosen.</p>
+          </div>
+          <div class="card">
+            <h3>Values that passed</h3>
+            <p>Clearance and trace-width values that actually passed, plus know-how about enclosure fastening and wall thickness.</p>
+          </div>
+          <div class="card">
+            <h3>Your preferences</h3>
+            <p>Points repeatedly flagged by silkscreen or review, and the user's own design preferences, accumulating with use.</p>
+          </div>
         </div>
-        <div class="card">
-          <h3>Enclosure lane</h3>
-          <p>Outline, component heights, fastening, interference, clearance, wall thickness, CAD output — judged by mechanical measurement gates.</p>
-        </div>
-        <div class="card">
-          <h3>Firmware lane</h3>
-          <p>Implementation, build, static checks, and virtual execution delegated to OpenHands' native software capabilities, with pin assignments kept consistent with the board.</p>
-        </div>
+        <p class="note">
+          Persistent memory is disabled by default. To use it, enable <em>Persistent memory</em> in
+          the OpenHands Local GUI settings. Memos assist the working context; pass or fail is
+          decided by the deterministic gates and evidence.
+        </p>
       </div>
-      <div class="cards" style="margin-top: 16px;">
-        <div class="card">
-          <h3>Fail-closed by design</h3>
-          <p>Missing tools, parse failures, skipped gates, and unknowns all fail closed. Passing evidence is only produced by digest-pinned container runs.</p>
-        </div>
-        <div class="card">
-          <h3>Rationale on record</h3>
-          <p>Every value the AI chose — parts, widths, dimensions, pins — is stored as a typed rationale record alongside the design, so &ldquo;why this?&rdquo; is answerable revisions later.</p>
-        </div>
-        <div class="card">
-          <h3>Files and git are the truth</h3>
-          <p>Schematics, PCBs, and drawings are projections generated from input files. Projections never flow back into the source of truth.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="acd">
-    <div class="wrap">
-      <p class="kicker">Under the Hood</p>
-      <h2>Powered by ACD — Autonomous Computer Design</h2>
-      <p class="lede">
-        VibeBB is the experience; <a href="https://github.com/VibeBB/acd-agent">ACD</a> is
-        the engine. ACD is an AI-first CAD built on OpenHands that inverts the traditional
-        EDA/MCAD model: the AI is the primary designer, and humans own the requirements. The name
-        ACD is an anagram of CAD, symbolizing that role reversal.
-      </p>
-      <div class="cta" style="justify-content: flex-start;">
-        <a class="btn btn-primary" href="https://github.com/VibeBB/acd-agent">View ACD on GitHub</a>
+    <section id="future" aria-labelledby="future-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">Future Vision</p>
+          <h2 id="future-title">Toward &ldquo;printing&rdquo; boards at home</h2>
+          <p class="lede">
+            VibeBB's premise — cheap and fast manufacturing — can go further. If printed electronics
+            matures, boards could be made on the spot like a home 3D printer, shortening
+            &ldquo;build and try&rdquo; from days to tens of minutes, and VibeBB would truly approach
+            breadboard speed. The same applies to enclosures, brackets, and mechanical parts: 3D
+            printing and CNC quoting, DFM, and ordering services become procurement channels on par
+            with board fabs.
+          </p>
+          <p class="lede">
+            Soberly speaking, in-home manufacturing of simple one- and two-layer boards is already
+            real (desktop milling, conductive ink printing). High-density multilayer boards, plated
+            through holes, high current, and certified mass production will remain the domain of
+            professional fabs for the time being. Conductive filament, conductive paste, and
+            3D-MID/LDS/IME are blurring the boundary between enclosure and circuit, but they
+            presuppose verification of conductivity, solderability, contact resistance, and
+            durability. VibeBB builds this future in from the start.
+          </p>
+        </header>
+        <div class="cards">
+          <div class="card">
+            <h3>DRC with mechanical and material profiles</h3>
+            <p>Minimum trace width and spacing, tool diameter, ink or filament resistivity and current capacity, via method, substrate, and curing/sintering conditions — verified as a separate profile within the same framework as fab-facing DRC.</p>
+          </div>
+          <div class="card">
+            <h3>Material-aware electrical analysis</h3>
+            <p>Trace resistance, voltage drop, and temperature rise are estimated from measured material data rather than by assuming copper foil.</p>
+          </div>
+          <div class="card">
+            <h3>Hybrid manufacturing dispatch</h3>
+            <p>From the same design graph: a locally prototyped version that can be built at hand, alongside a conventional fab mass-production version for when density or current exceeds what local methods can deliver.</p>
+          </div>
+          <div class="card">
+            <h3>Closed-loop inspection</h3>
+            <p>Alignment, continuity, and resistance measurements are fed back into the design, and the quirks of each machine and material lot are accumulated as knowledge.</p>
+          </div>
+          <div class="card">
+            <h3>Room for structural electronics</h3>
+            <p><code>Layout</code> is not fixed to planar rigid boards. A design graph that does not preclude non-planar circuits — including enclosure surfaces and embedded wiring — is preferred.</p>
+          </div>
+          <div class="card">
+            <h3>Personally fitted wearables</h3>
+            <p>Take a 3D body scan as a mechanical constraint and produce non-planar, stretchable circuits on the spot. When shape changes from person to person, schematics as the source of truth break down — so VibeBB regenerates manufacturing data every time from a design graph of requirements, constraints, and rationale.</p>
+          </div>
+        </div>
+        <p class="note">
+          This is a vision-level future direction, not a promise about the current implementation scope.
+        </p>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <footer class="site">
+  <footer class="site-footer">
     <div class="wrap">
-      <p>VibeBB — Vibe BreadBoarding. Built on <a href="https://github.com/VibeBB/acd-agent">ACD (Autonomous Computer Design)</a>.</p>
-      <p>Logo artwork from the <a href="https://github.com/VibeBB/acd-agent">acd-agent</a> project, BSD 3-Clause License, Copyright (c) 2026, VibeBB.</p>
+      <p>VibeBB — Vibe BreadBoarding.</p>
+      <p>Logo artwork: BSD 3-Clause License, Copyright (c) 2026, VibeBB.</p>
     </div>
   </footer>
 </body>
