@@ -55,10 +55,13 @@ are not limited to 90° and 45° steps.
   placement), LLM plus solver hybrids, and KiCad's routing and API
   roadmap.
 
-### 3. Listening review for bard
+### 3. AI listening review for bard
 
-**Goal.** Songs and product sound cues are reviewed by listening, in the
-same record format as vision reviews.
+**Goal.** An audio-capable AI agent listens to rendered songs and product
+sound cues and records an advisory listening review in the same record
+format as vision reviews: claims grounded in the cue id, time offset, and
+pitch, a blind second listener, and never a gate verdict. The listener is
+an AI agent, not a human panel.
 
 - **Why not yet.** The agents' model providers do not yet offer an
   audio-input path that VibeBB can call with the same provenance as image
@@ -110,10 +113,12 @@ same record format as vision reviews.
   比べるだけにします。ゲートと実機の測定で今のやり方を上回るまでは、成果物には
   使いません。
 
-### 3. bardの「耳で聴く」レビュー
+### 3. bardの、AI agentが聴くレビュー
 
-- **目標**: うたと製品の効果音（cue）を、耳で聴いてレビューします。記録の形は
-  vision reviewと同じにします。
+- **目標**: 音声を入力できるAI agentが、レンダリングしたうたと製品の効果音（cue）を
+  聴いてレビューします。聴くのは人ではなくAI agentです。記録の形はvision reviewと
+  同じにし、主張はcueのid・時刻・音程に結び付け、もう1つのAI agentに前の感想を
+  見せずに聴かせます。助言にとどめ、ゲートの判定は変えません。
 - **まだ実装しない理由**: VibeBBが使うモデルには、画像のレビューと同じ出典の
   記録を付けて呼べる、音声入力の経路がまだありません。それまでbardは、cueを
   決定論のルール（周波数の範囲、長さ、音圧の上限）で確かめ、聴いていないことを
