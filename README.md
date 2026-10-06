@@ -80,6 +80,11 @@ requests with one another. Firmware is delegated to OpenHands' native
 software development capability, so board, enclosure, and firmware are
 designed and verified within the same interactive flow.
 
+The artifacts that flow between the agents today, and the handoffs still
+being built, are mapped in [docs/handoffs.md](docs/handoffs.md). Planned
+directions that are not implemented yet are in
+[docs/roadmap.md](docs/roadmap.md).
+
 #### Design principles
 
 - Each stage produces machine-readable and visual projections, which
@@ -254,6 +259,10 @@ VibeBBはレビュアーの役割を人間から決定論的ゲートと実機�
 要望を出し合いながら並行して進めます。ファームウェアはOpenHands本来の
 ソフトウェア開発能力へ委譲するため、基板・筐体・ファームウェアを同じ対話的な
 流れの中で設計・検証できます。
+
+エージェントの間で今流れている成果物と、作っている途中の受け渡しは
+[docs/handoffs.md](docs/handoffs.md)にまとめています。まだ実装していない
+将来の計画は[docs/roadmap.md](docs/roadmap.md)にあります。
 
 #### 設計原則
 
