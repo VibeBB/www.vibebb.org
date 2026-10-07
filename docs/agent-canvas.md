@@ -118,13 +118,10 @@ files in `~/.openhands/agent-profiles/` (schema version 2).
 
 ### Automations
 
-- For developing the VibeBB plugins themselves, the *Software Factory*
-  template set fits well: separate triage, developer, and reviewer
-  automations, each with its own agent profile and a scoped token, plus
-  a deterministic watchdog that needs no agent.
-- Automations can also attach plugins directly (the plugin run type), so
+- Automations can attach plugins directly (the plugin run type), so
   design-side automations are possible — e.g., a scheduled run that
-  re-verifies generated artifacts after upstream inputs change. Give the
+  re-verifies generated artifacts after upstream inputs change, or that
+  regenerates derived views when a sister's output lands. Give the
   automation its own agent profile scoped to only the plugins it needs.
 - Version automations with Git Sync (bidirectional, with optional
   encryption), or share them as exported `.automation.json` files.
@@ -284,14 +281,11 @@ MCP サーバー・シークレットを範囲限定します。1.20 以降は�
 
 ### オートメーション
 
-- VibeBB プラグイン自体の開発には、*Software Factory* のテンプレート構成が
-  合います。トリアージ・開発・レビューの各オートメーションに専用の
-  エージェントプロファイルとスコープ付きトークンを割り当て、エージェント
-  不要の決定論的ウォッチドッグを置く構成です。
 - オートメーションはプラグインを直接アタッチ（plugin 実行形式）できるので、
-  設計側の自動化も可能です。例：上流の入力が変わったときに生成物を再検証
-  する定時実行。オートメーションには必要なプラグインだけを範囲指定した
-  専用プロファイルを割り当ててください。
+  設計側の自動化が可能です。例：上流の入力が変わったときに生成物を再検証
+  する定時実行や、姉妹の出力が置かれたときに派生ビューを再生成する実行。
+  オートメーションには必要なプラグインだけを範囲指定した専用プロファイルを
+  割り当ててください。
 - Git Sync（双方向、暗号化オプションあり）でオートメーションを版管理するか、
   `.automation.json` をエクスポートして共有します。
 - 1.19 以降、無効化されたオートメーションには構造化された理由とタイム
