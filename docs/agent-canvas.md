@@ -57,6 +57,11 @@ newer.
 - Deterministic gates — not the models — issue pass/fail verdicts.
   Choosing a cheaper model degrades design quality, never safety;
   choosing a stronger model never weakens a gate.
+- Two optional extras: save a third profile named `oracle` and the
+  built-in `ask_oracle` tool gives the agent a stateless second
+  opinion on demand; and `FallbackStrategy` on an LLM profile lets a
+  long design session survive transient provider errors by falling
+  back to named fallback profiles.
 
 ### Agent profiles
 
@@ -76,6 +81,11 @@ privilege:
 
 Create profiles in the canvas settings or, as an advanced path, as JSON
 files in `~/.openhands/agent-profiles/` (schema version 2).
+
+Use an **OpenHands-kind** profile for design work. ACP agents (Claude
+Code, Codex, Gemini CLI) run their own tool loop: the plugins' hooks —
+which seed the model lanes and guard generated files — do not run
+there, so important VibeBB guarantees are missing under ACP.
 
 ### Secrets
 
@@ -109,12 +119,29 @@ files in `~/.openhands/agent-profiles/` (schema version 2).
   conversation easy to find later.
 - Enable *Persistent memory* in the Local GUI settings. VibeBB reads
   back what it learned in previous conversations — preferred stackups,
-  part numbers, clearances that actually passed.
+  part numbers, clearances that actually passed. Project-tier memory
+  lives in the workspace's `.openhands/memory/` and can be committed
+  with the design files, so a team's accumulated conventions travel
+  with the project.
+- Drive long design sessions with `/goal` — e.g.
+  `/goal --max 5 every sister gate must report pass for the widget
+  contract`. A judge LLM audits the transcript after each round and
+  keeps the agent going until the gates actually read green, not just
+  until the agent claims success.
+- Use `Branch from here` on a message to explore an alternative design
+  direction without contaminating the original conversation; pause a
+  conversation during manufacturing lead time and resume it with the
+  measured values.
 - Attach photos, datasheets, and sketches in chat. The vision review
   reads them and its findings enter the design file as assumptions for
   you to confirm.
 - When a sister asks a question, answer it in the conversation — an
   unanswered question stays `unresolved` and blocks the verdict.
+- Power-user extras: a Cloud `/launch` link can hand teammates a
+  pre-configured plugin set; org- or user-level skills (an `.agents`
+  repo) overlay your own conventions without touching the plugins;
+  path-triggered skills (`paths:` frontmatter) inject scoped rules
+  deterministically when matching files are touched.
 
 ### Automations
 
@@ -223,6 +250,10 @@ files in `~/.openhands/agent-profiles/` (schema version 2).
 - 合否を出すのは決定論的ゲートであり、モデルではありません。安いモデルを
   選んでも下がるのは設計品質だけで安全性は下がりません。逆に強いモデルを
   選んでもゲートは弱まりません。
+- 任意の追加2点：`oracle` という名前で3つ目のプロファイルを保存すると
+  内蔵 `ask_oracle` ツールでステートレスなセカンドオピニオンを使えます。
+  また LLM プロファイルの `FallbackStrategy` でフォールバック先を指定
+  すれば、長い設計セッションでプロバイダの一時的な障害を乗り越えられます。
 
 ### エージェントプロファイル
 
@@ -242,6 +273,11 @@ MCP サーバー・シークレットを範囲限定します。1.20 以降は�
 プロファイルはキャンバスの設定画面で作成するか、上級者向けには
 `~/.openhands/agent-profiles/` に JSON（スキーマバージョン 2）として
 置きます。
+
+設計作業には **OpenHands 系** のプロファイルを使ってください。ACP
+エージェント（Claude Code、Codex、Gemini CLI）は独自のツールループで
+動き、プラグインのフック――モデルレーンのシードや生成ファイルの保護――が
+そこでは動作しないため、VibeBB の重要な保証が欠けます。
 
 ### シークレット
 
@@ -273,11 +309,25 @@ MCP サーバー・シークレットを範囲限定します。1.20 以降は�
   を持ち、タグがあると生成元の会話を後で見つけやすくなります。
 - Local GUI の設定で *Persistent memory* を有効にしてください。VibeBB は
   以前の会話で学んだこと（よく使う積層構成、型番、実際に通ったクリアランス
-  など）を次の会話で読み戻します。
+  など）を次の会話で読み戻します。プロジェクト層のメモリはワークスペースの
+  `.openhands/memory/` にあり、設計ファイルと一緒にコミットできるので、
+  蓄積した約束事をプロジェクトと一緒に持ち運べます。
+- 長い設計セッションは `/goal` で駆動してください。例：
+  `/goal --max 5 全姉妹ゲートが widget 契約で pass を報告する`。
+  審査用 LLM が各ラウンドの記録を監査し、ゲートが実際にグリーンになるまで
+  エージェントを走らせ続けます（「できた」の主張で終わりません）。
+- メッセージの `Branch from here` で、元の会話を汚さずに別の設計方向を
+  探れます。製造リードタイム中は会話を一時停止し、実測値を持って再開して
+  ください。
 - 写真・データシート・スケッチは会話に添付してください。視覚レビューが
   読み取り、結果は設計ファイルに「あなたが確認する仮定」として入ります。
 - 姉妹からの質問には会話で回答してください。未回答の質問は `unresolved`
   のまま残り、判定を止めます。
+- 上級者向け：Cloud の `/launch` リンクでプラグイン一式を設定済みの状態で
+  チームに渡せます。組織・ユーザー単位のスキル（`.agents` リポジトリ）で
+  プラグインに触れず自前の約束事を重ねられます。パストリガーのスキル
+  （`paths:` フロントマター）は該当ファイルに触れた時に決定論的にルールを
+  注入します。
 
 ### オートメーション
 
