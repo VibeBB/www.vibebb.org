@@ -83,7 +83,9 @@ designed and verified within the same interactive flow.
 The artifacts that flow between the agents today, and the handoffs still
 being built, are mapped in [docs/handoffs.md](docs/handoffs.md). Planned
 directions that are not implemented yet are in
-[docs/roadmap.md](docs/roadmap.md).
+[docs/roadmap.md](docs/roadmap.md). Practices for running the plugins on
+your own Agent Canvas / OpenHands setup are in
+[docs/agent-canvas.md](docs/agent-canvas.md).
 
 #### Design principles
 
@@ -262,7 +264,9 @@ VibeBBはレビュアーの役割を人間から決定論的ゲートと実機�
 
 エージェントの間で今流れている成果物と、作っている途中の受け渡しは
 [docs/handoffs.md](docs/handoffs.md)にまとめています。まだ実装していない
-将来の計画は[docs/roadmap.md](docs/roadmap.md)にあります。
+将来の計画は[docs/roadmap.md](docs/roadmap.md)にあります。自分の
+Agent Canvas / OpenHands 環境でプラグインを動かす際の実践的な指針は
+[docs/agent-canvas.md](docs/agent-canvas.md)にあります。
 
 #### 設計原則
 
