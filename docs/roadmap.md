@@ -71,6 +71,36 @@ an AI agent, not a human panel.
 - **Watch.** Audio-input support in the model providers configured for
   OpenHands.
 
+### 4. Marketplace registration
+
+**Goal.** List the VibeBB sister plugins in the OpenHands plugin
+marketplace so users can install them from the canvas UI instead of
+adding Git sources by hand.
+
+- **Why not yet.** The marketplace contribution path and review criteria
+  are still settling (Apps and the plugin manifest surface are Beta), and
+  the plugins still pin tool images and hooks per-repo; we want the
+  install experience to be boring before publishing a listing.
+- **Watch.** OpenHands marketplace submission docs, manifest requirements,
+  and how pinned docker images and host-side hooks are treated for
+  listed plugins.
+
+### 5. Cloud `/launch` links
+
+**Goal.** A "try it" link on vibebb.org that opens an Agent Canvas
+conversation with the VibeBB plugins pre-attached
+(`app.all-hands.dev/launch?plugins=...`).
+
+- **Why not yet.** `/launch` targets OpenHands Cloud; VibeBB tool
+  containers need a host docker daemon, which a cloud sandbox does not
+  provide the way our launchers expect. Shipping a link that opens a
+  broken experience is worse than none. The self-hosted path
+  (install plugins + local runtime) documented in
+  [agent-canvas.md](agent-canvas.md) remains the supported one.
+- **Watch.** Whether cloud conversations can reach a user-provided
+  docker daemon, or a supported container-nesting story lands in
+  AgentCanvas.
+
 ## 日本語
 
 技術と安全の仕組みが整った時点で、familyとして取り組む予定の方向です。
@@ -123,3 +153,28 @@ an AI agent, not a human panel.
   記録を付けて呼べる、音声入力の経路がまだありません。それまでbardは、cueを
   決定論のルール（周波数の範囲、長さ、音圧の上限）で確かめ、聴いていないことを
   記録に明記します。
+
+### 4. marketplaceへの登録
+
+- **目標**: VibeBBの姉妹プラグインをOpenHandsのプラグインmarketplaceに
+  登録し、ユーザーがcanvas UIから、GitのURLを手で足さなくても入れられる
+  ようにします。
+- **まだ実装しない理由**: marketplaceへの登録手順と審査の基準はまだ安定して
+  いません（Appsとプラグインmanifestの仕様はBetaです）。また各プラグインは
+  リポジトリごとにツールのimageとhookを固定しています。公開の前に、
+  インストールの体験を退屈なほど確実にしておきたいと考えています。
+- **見ているもの**: OpenHandsのmarketplace登録のドキュメント、manifestの
+  要件、登録するプラグインで固定したdocker imageやホスト側hookがどう扱われるか。
+
+### 5. Cloudの`/launch`リンク
+
+- **目標**: vibebb.orgに「試してみる」リンクを置き、VibeBBプラグインが最初から
+  付いたAgent Canvasの会話を開けるようにします
+  （`app.all-hands.dev/launch?plugins=...`）。
+- **まだ実装しない理由**: `/launch`はOpenHands Cloud向けです。VibeBBのツール
+  コンテナにはホスト側のdockerデーモンが必要で、cloudのsandboxは、今の
+  launcherが期待する形では提供しません。動かない体験へのリンクを配るより、
+  無い方がましです。セルフホスト（プラグイン導入＋local runtime）の道は
+  [agent-canvas.md](agent-canvas.md)の手順が正式です。
+- **見ているもの**: cloudの会話からユーザー側のdockerデーモンに届けられるか、
+  AgentCanvasにコンテナ入れ子の公式な仕組みが入るか。
