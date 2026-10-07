@@ -43,11 +43,16 @@ newer.
   files through the shared workspace; a disabled plugin leaves its
   liaison input `unknown`, and unknown inputs fail closed at the
   receiving gate rather than being skipped.
+- Sister coordination happens inside **one** conversation: the sisters
+  run as `task` sub-agents sharing the workspace. Do not split a design
+  across child conversations — separate conversations have separate
+  event streams and the contract files and review records stop lining
+  up. For exploring an alternative, branch the conversation instead
+  (below).
 
 ### Model lanes: author and review
 
-- Each plugin's SessionStart hook seeds two LLM profiles,
-  `vibebb-author` and `vibebb-review`, cloned from your active profile
+- Each plugin's SessionStart hook seeds the `vibebb-author` and `vibebb-review` LLM profiles, cloned from your active profile
   on first use. Generation and review can then run on different models.
 - Point the lanes at different models deliberately: a strong model for
   `vibebb-author`, and a strong **vision-capable** model for
@@ -80,7 +85,7 @@ privilege:
   conventions the whole team shares.
 
 Create profiles in the canvas settings or, as an advanced path, as JSON
-files in `~/.openhands/agent-profiles/` (schema version 2).
+files in `~/.openhands/agent-profiles/` (schema version 3).
 
 Use an **OpenHands-kind** profile for design work. ACP agents (Claude
 Code, Codex, Gemini CLI) run their own tool loop: the plugins' hooks —
@@ -137,11 +142,13 @@ there, so important VibeBB guarantees are missing under ACP.
   you to confirm.
 - When a sister asks a question, answer it in the conversation — an
   unanswered question stays `unresolved` and blocks the verdict.
-- Power-user extras: a Cloud `/launch` link can hand teammates a
-  pre-configured plugin set; org- or user-level skills (an `.agents`
+- Power-user extras: org- or user-level skills (an `.agents`
   repo) overlay your own conventions without touching the plugins;
   path-triggered skills (`paths:` frontmatter) inject scoped rules
-  deterministically when matching files are touched.
+  deterministically when matching files are touched. (A Cloud `/launch`
+  link that hands teammates a pre-configured plugin set is a
+  [roadmap](roadmap.md) item — VibeBB tool containers need a host Docker
+  daemon that the cloud sandbox does not provide today.)
 
 ### Automations
 
@@ -236,10 +243,14 @@ there, so important VibeBB guarantees are missing under ACP.
   ワークスペース内の設計ファイルで連携します。無効化されたプラグインが
   あると、その liaison 入力は `unknown` になり、受け側のゲートで合格に
   なりません（スキップではなく fail closed です）。
+- 姉妹の連携は **1つの会話の中** で行われます。姉妹は共有ワークスペースを
+  使う `task` サブエージェントとして動きます。設計を子会話に分けないで
+  ください。別会話ではイベント記録が分かれ、契約ファイルやレビュー記録が
+  揃わなくなります。別の案を試すときは会話をブランチしてください（後述）。
 
 ### モデルのレーン分け：作成とレビュー
 
-- 各プラグインの SessionStart フックが、2 つの LLM プロファイル
+- 各プラグインの SessionStart フックが、LLM プロファイル
   `vibebb-author` と `vibebb-review` を初回起動時に有効なプロファイル
   から複製して作成します。生成とレビューを別モデルで実行できます。
 - レーンは意図的に分けてください：`vibebb-author` には強いモデルを、
@@ -323,11 +334,12 @@ MCP サーバー・シークレットを範囲限定します。1.20 以降は�
   読み取り、結果は設計ファイルに「あなたが確認する仮定」として入ります。
 - 姉妹からの質問には会話で回答してください。未回答の質問は `unresolved`
   のまま残り、判定を止めます。
-- 上級者向け：Cloud の `/launch` リンクでプラグイン一式を設定済みの状態で
-  チームに渡せます。組織・ユーザー単位のスキル（`.agents` リポジトリ）で
+- 上級者向け：組織・ユーザー単位のスキル（`.agents` リポジトリ）で
   プラグインに触れず自前の約束事を重ねられます。パストリガーのスキル
   （`paths:` フロントマター）は該当ファイルに触れた時に決定論的にルールを
-  注入します。
+  注入します。（プラグイン一式を設定済みで渡せるCloudの`/launch`リンクは
+  [ロードマップ](roadmap.md)の項目です — VibeBBのツールコンテナが必要とする
+  ホスト側Dockerデーモンをcloudのsandboxは今日提供しないためです。）
 
 ### オートメーション
 
