@@ -17,6 +17,8 @@ when their code lands.
   agent's inputs; a change goes back as a request.
 - **Pinned by hash.** The receiver records the producer artifact's
   `sha256`. A changed upstream file is detected, never silently reused.
+- **Provenance travels beside the artifact.** A generated export carries an
+  interchange envelope v3 sidecar; see [Provenance](#provenance-interchange-envelope-v3).
 - **Gates decide.** Only the receiver's deterministic gates issue a
   verdict. Impressions, vision reviews and songs travel with the artifact
   as advisory evidence and never change a verdict.
@@ -167,6 +169,46 @@ flowchart LR
 - **document** reads sister agents, their artifacts and their records as
   typed sources for reports and launch material.
 
+### Provenance (interchange envelope v3)
+
+Every generated sister export has a sidecar `<artifact>.provenance.json`
+next to it (`x.wire-crimp.json` -> `x.wire-crimp.provenance.json`). The
+sidecar sits beside the artifact, not inside it, because receivers reject
+unknown fields in an artifact body; producers and receivers therefore never
+have to merge in lockstep. Each agent ships a byte copy of the same
+`_envelope.py` module.
+
+| Field | Rule |
+| --- | --- |
+| `envelope_version` | `3` |
+| `producer` | the writing agent (`circuit`, `mech`, `wire`, `fpga`, `firmware`, `prodeng`, `sim`, `bard`) |
+| `artifact` | `{name, sha256}` of the artifact file |
+| `sources[]` | `{path, sha256}` of each file the artifact was projected from; workspace-relative when inside the workspace |
+| `decision_refs[]` | ids of the producer's VRP decisions whose evidence cites a source at its current sha256 |
+
+The producer refuses to write the sidecar, and removes a stale one, while its
+own decision log has a broken hash chain. The JSON is deterministic.
+
+The receiver checks a pinned artifact against its sidecar:
+
+- **pass**: the sidecar names the expected producer and artifact, the
+  artifact sha256 equals the pinned sha256, every source still hashes to its
+  recorded sha256, and every `decision_refs` id is in the producer's intact
+  `observations/<producer>/decisions.jsonl`.
+- **fail**: malformed sidecar, wrong version or producer, artifact or source
+  mismatch, a ref missing from the log, or a broken producer chain.
+- **unknown**: no sidecar, an unreadable source, or refs given while the
+  producer log is absent. Binary gates (fpga, firmware, dashboard) turn this
+  into a fail that names the unknown status in its detail.
+
+Receivers that pin a specific export always require the sidecar (for
+example wire `import_provenance`, mech and circuit `import_provenance`,
+fpga `fpga.import_provenance`, firmware `fw.circuit_provenance`, prodeng
+`imports.provenance`, sim imports, and the `provenance` finding on every
+`*.sim-response.json` read by circuit, mech, wire and fpga). The generic
+`imports[]` of UX-creator and dashboard also take authored sister contracts,
+which have no sidecar; they check provenance only when a sidecar exists.
+
 ### Change control (ECR / ECO)
 
 A sister that must change a file other agents pin by sha256 does not
@@ -197,6 +239,8 @@ liaisonのファイル、contractの欄）で確かめたものです。計画�
   変更が必要な時は依頼として返します。
 - **hashで固定する**: 受け取る側は、作成側の成果物の `sha256` を記録します。
   元のファイルが変われば検出され、黙って使い回されることはありません。
+- **出どころは成果物の横に置く**: 作られた成果物には、横に別ファイル
+  `<成果物>.provenance.json`（interchange envelope v3）が付きます。
 - **判定はゲートだけが行う**: 判定を出すのは、受け取る側の決定論ゲートだけです。
   impression、vision review、うたは参考情報として成果物と一緒に渡り、判定を
   変えることはありません。
@@ -212,3 +256,24 @@ liaisonのファイル、contractの欄）で確かめたものです。計画�
 答えは、UXを通さずに依頼したagentへ直接戻ります。他のagentがsha256で固定して
 いるファイルを変える時は、ECR/ECOを通します（人による承認はありません）。
 外部からVibeBBに入る情報は、この地図の対象外です。
+
+### 出どころの別ファイル（interchange envelope v3）
+
+作る側は、姉妹に渡す成果物の横に `<成果物>.provenance.json` を書きます（例: `x.wire-crimp.json` の横に
+`x.wire-crimp.provenance.json`）。成果物の中に入れないのは、受け取る側が知らない項目を拒否するためです。
+別ファイルにすれば、作る側と受け取る側を同時にmergeする必要がありません。
+
+- 中身: `envelope_version`（`3`）、`producer`（作ったagent）、`artifact`（成果物の名前とsha256）、
+  `sources[]`（元のファイルのパスとsha256）、`decision_refs[]`（元のファイルを今のsha256で根拠に
+  挙げている、作る側のVRPの決定のid）
+- 作る側は、自分の決定のログの鎖が壊れている間は、別ファイルを書きません（古い別ファイルは消します）。
+- 受け取る側は、固定したsha256と別ファイルを照合します。
+  - 合格: 作ったagentと成果物の名前が合い、sha256が固定した値と同じで、元のファイルも変わっておらず、
+    `decision_refs` がすべて作る側の壊れていないログにある
+  - 不合格: 別ファイルが壊れている、版や作ったagentが違う、成果物や元のファイルが変わった、
+    ログに無いidがある、作る側のログの鎖が壊れている
+  - 不明: 別ファイルが無い、元のファイルが読めない、idがあるのに作る側のログが無い。
+    合格か不合格の2値のゲート（fpga、firmware、dashboard）では、理由に「不明」を書いた不合格にします。
+- 特定の成果物を固定して取り込む側は、必ず別ファイルを求めます。UX-creatorとdashboardの
+  汎用の取り込み（`imports[]`）は、人やagentが書いたcontractも取り込みます。こうしたcontractには
+  別ファイルが無いため、別ファイルがある時だけ照合します。
