@@ -36,40 +36,109 @@ flowchart LR
   FW["firmware"]
   FPGA["fpga"]
   SIM["simulation"]
-  PE["production-engineering"]
   DASH["dashboard"]
   UX["UX-creator"]
   BARD["bard"]
-  DOC["document"]
 
   CIR -- "*.firmware.json, pinmap" --> FW
   CIR -- "*.firmware.json" --> FPGA
   CIR -- "*.connectivity.json" --> WIRE
   CIR -- "*.connectivity.json" --> SIM
-  MECH -- "*.envelope.json" --> WIRE
+  CIR -- "*.board-geometry.json" --> MECH
+  MECH -- "*.mech-board-envelope.json" --> CIR
+  MECH -- "*.envelope.json + keepouts" --> WIRE
   MECH -- "*.envelope.json" --> SIM
   WIRE -- "*.contract.json" --> SIM
+  FW -- "*.fw-power.json" --> SIM
   BARD -- "song / cue artifacts" --> SIM
-  FW -- "*.fw.json + sha256" --> DASH
+  BARD -- "cues.json" --> FW
+  FPGA -- "*.fpga-regmap.json" --> FW
+  FW -- "*.fw.json + faults" --> DASH
   UX -- "*.ux.json" --> DASH
   UX -- "*.ux.json" --> WIRE
+  UX -- "*.ux.json CMF" --> MECH
   UX -- "cue request" --> BARD
-  CIR -- "circuit-brief, circuit-connectivity" --> PE
-  MECH -- "mech-envelope" --> PE
-  WIRE -- "wire-contract" --> PE
-  UX -- "ux-contract" --> PE
 ```
 
 | From | To | Artifact | Where the receiver binds it |
 | --- | --- | --- | --- |
 | circuit | firmware, fpga | `*.firmware.json` (pins, buses, clocks) | firmware / fpga contract import |
 | circuit | wire, sim | `*.connectivity.json` (nets, connector pins) | wire `imports`, sim `ImportRef.system` |
-| mechanical | wire, sim | `*.envelope.json` (fixing points, keep-outs) | wire `imports`, sim `ImportRef.system` |
+| circuit | mechanical | `*.board-geometry.json` (outline, holes, part heights) | mech `board_geometry` gate |
+| mechanical | circuit | `*.mech-board-envelope.json` (height limits, side openings) | circuit `circuit.enclosure` gate |
+| mechanical | wire, sim | `*.envelope.json` (fixing points, 3D keep-out boxes) | wire `imports` + `route_keepout` gate, sim `ImportRef.system` |
 | wire | sim | `*.contract.json` | sim `ImportRef.system` |
+| firmware | sim | `*.fw-power.json` (supply-net draw) | sim `import:firmware:<net>` PDN load |
 | bard | sim | song and cue artifacts | sim `ImportRef.system` |
-| firmware | dashboard | `*.fw.json` with `firmware_sha256` | dashboard `firmware_contract` |
+| bard | firmware | `cues.json` playback table | firmware `fw_cues.h` generation |
+| fpga | firmware | `*.fpga-regmap.json` | firmware `fw.fpga_regmap` gate |
+| firmware | dashboard | `*.fw.json` with `firmware_sha256`, fault table | dashboard `firmware_contract`, `service.faults` gate |
 | UX | dashboard, wire | `*.ux.json` | contract import |
+| UX | mechanical | `*.ux.json` CMF part | mech `appearance_cmf` gate |
+
+### Simulation requests and answers
+
+```mermaid
+flowchart LR
+  SIM["simulation"]
+  REQ["mechanical, circuit, wire, fpga"]
+  PE["production-engineering"]
+  REQ -- "*.sim-request.json" --> SIM
+  SIM -- "*.sim-response.json (margin, corrective guidance)" --> REQ
+  SIM -- "*.sim-response.json predictions" --> PE
+```
+
+| From | To | Artifact | Where the receiver binds it |
+| --- | --- | --- | --- |
+| mechanical | simulation | drop, vibration and IP study request | sim ruggedness analysis |
+| circuit | simulation | per-part dissipation, electrolytic lifetime | sim thermal and Arrhenius analyses |
+| wire | simulation | supply loops (PDN) | sim PDN analysis |
+| fpga | simulation | package thermal facts | sim thermal analysis |
+| simulation | requester | hash-pinned response with margins and corrective guidance on failure | each requester's sim-response gate |
+| simulation | production-engineering | predicted characteristic values | prodeng `sim.prediction` gate |
+
+A failing simulation answer goes straight back to the requesting agent as a
+change driver; it does not route through UX-creator.
+
+### Manufacturing
+
+```mermaid
+flowchart LR
+  PE["production-engineering"]
+  CIR["electrical-circuit"]
+  MECH["mechanical"]
+  WIRE["wire"]
+  FW["firmware"]
+  FPGA["fpga"]
+  UX["UX-creator"]
+  DASH["dashboard"]
+
+  CIR -- "brief, connectivity, circuit-assembly, circuit-handling" --> PE
+  MECH -- "mech-envelope, mech-appearance" --> PE
+  WIRE -- "wire-contract, wire-crimp, wire-formboard" --> PE
+  FPGA -- "fpga-production" --> PE
+  FW -- "fw-production" --> PE
+  UX -- "ux-contract (oobe.in_box)" --> PE
+  PE -- "factory-test-spec.json" --> FW
+  PE -- "factory-test-spec.json" --> CIR
+  PE -- "factory-test-spec.json" --> DASH
+```
+
+| From | To | Artifact | Where the receiver binds it |
+| --- | --- | --- | --- |
 | circuit, mechanical, wire, UX | production-engineering | brief, connectivity, envelope, contracts | prodeng `ImportRef.kind` |
+| circuit | production-engineering | `*.circuit-assembly.json` (per-side SMT/THT), `*.circuit-handling.json` (MSL, reflow peak, ESD) | prodeng `circuit.assembly`, `circuit.handling` gates |
+| mechanical | production-engineering | `*.mech-appearance.json` (cosmetic criteria, limit samples) | prodeng `appearance.limit_samples` gate |
+| wire | production-engineering | `*.wire-crimp.json`, `*.wire-formboard.json` | prodeng `wire.crimp`, `wire.formboard` gates |
+| fpga, firmware | production-engineering | `*.fpga-production.json`, `*.fw-production.json` (gated image sha256, loader options) | prodeng `fpga.programming`, `firmware.programming` gates |
+| UX | production-engineering | `oobe.in_box` in the UX contract | prodeng `packaging.oobe` gate |
+| production-engineering | firmware | `factory-test-spec.json` | firmware `fw.ftm` gate |
+| production-engineering | circuit | `factory-test-spec.json` test nets | circuit `circuit.dft` gate |
+| production-engineering | dashboard | `factory-test-spec.json` | dashboard `factory.spec` gate and factory-test panel |
+
+Checks that stay inside one agent (circuit derating, second sources and
+fabrication stackup; fpga corner guard band and power estimate) are gates,
+not handoffs, and are not drawn here.
 
 ### Coordination: liaison (SLP v2) and records (VRP)
 
@@ -97,25 +166,21 @@ flowchart LR
 - **document** reads sister agents, their artifacts and their records as
   typed sources for reports and launch material.
 
-### Planned handoffs (not on `main` yet)
+### Change control (ECR / ECO)
 
-These are implemented repository by repository. Each moves into the
-diagrams above when its code is merged.
+A sister that must change a file other agents pin by sha256 does not
+re-pin silently. It writes an engineering change request (`*.ecr.json`)
+and order (`*.eco.json`); UX-creator's `ux change` / `ux_change_check`
+finds every consumer pin, rejects stale pins and omitted consumers, and
+requires passing gate evidence and dispositioned AI review findings. AI
+findings can block a change but never pass one. There is no human
+approval step.
 
-| From | To | Artifact |
-| --- | --- | --- |
-| circuit | mechanical | board outline, connector positions, component heights (IDF / STEP) |
-| mechanical | circuit | height limits and connector openings from the enclosure |
-| mechanical | simulation | drop, vibration and IP study requests |
-| circuit | simulation | per-part dissipation for the thermal model |
-| circuit | production-engineering | test points (DFT), derating, alternates, PCB fabrication and assembly specifications |
-| mechanical, circuit | wire | 3D route check against keep-outs and connector positions |
-| bard | firmware | `cues.json` playback table, buzzer frequency response and SPL limits |
-| fpga | firmware | register map, multi-corner timing, power estimate |
-| fpga, firmware | production-engineering | programming procedure, bitstream / image sha256, factory test commands |
-| simulation | circuit, mechanical | margin-driven change requests (direct, not via UX) |
-| UX | mechanical, production-engineering | industrial-design form, out-of-box experience for packaging |
-| all | all | engineering change request / order (ECR / ECO) and AI design reviews |
+### Planned handoffs
+
+None. Every handoff from the previous plan is on `main` and drawn above.
+Inputs that enter VibeBB from outside (supplier data, field returns,
+regulatory updates) are out of scope for this map.
 
 ## 日本語
 
@@ -141,6 +206,8 @@ liaisonのファイル、contractの欄）で確かめたものです。計画�
   続けます。
 
 図と表は英語の節を見てください。agentの間の記録（VRP v2）の決まりは
-[records-protocol.md](records-protocol.md)にあります。計画中の受け渡し（circuit → mechの基板外形と
-部品高さ、bard → firmwareのcue再生、fpga → firmwareのレジスタマップ、設計変更
-（ECR/ECO）など）は、repositoryごとに実装し、mergeされた順に図へ移します。
+[records-protocol.md](records-protocol.md)にあります。以前「計画中」だった
+受け渡しは、すべて `main` に入り、図と表に移しました。シミュレーションの不合格の
+答えは、UXを通さずに依頼したagentへ直接戻ります。他のagentがsha256で固定して
+いるファイルを変える時は、ECR/ECOを通します（人による承認はありません）。
+外部からVibeBBに入る情報は、この地図の対象外です。
