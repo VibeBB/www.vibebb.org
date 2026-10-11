@@ -153,7 +153,8 @@ flowchart LR
 - **Sister Liaison Protocol (SLP v2).** UX-creator writes requests into
   each sister's `liaison/` inbox; the sister answers with a response file
   that its guard hook protects. UX-creator detects circular request
-  chains, so a request cannot bounce forever.
+  chains, so a request cannot bounce forever. See
+  [liaison-protocol.md](liaison-protocol.md).
 - **VibeBB Record Protocol (VRP v2).** Each agent appends hash-chained
   decisions, stage impressions, vision reviews, read receipts, insight
   status, blind-review reconciles and bard song receipts to

@@ -85,7 +85,8 @@ being built, are mapped in [docs/handoffs.md](docs/handoffs.md). Planned
 directions that are not implemented yet are in
 [docs/roadmap.md](docs/roadmap.md). The shared record protocol (VRP v2)
 for decisions, impressions, reviews and bard songs is specified in
-[docs/records-protocol.md](docs/records-protocol.md). Practices for running the plugins on
+[docs/records-protocol.md](docs/records-protocol.md); requests and answers between agents follow
+[docs/liaison-protocol.md](docs/liaison-protocol.md). Practices for running the plugins on
 your own Agent Canvas / OpenHands setup are in
 [docs/agent-canvas.md](docs/agent-canvas.md).
 
@@ -268,7 +269,7 @@ VibeBBはレビュアーの役割を人間から決定論的ゲートと実機�
 [docs/handoffs.md](docs/handoffs.md)にまとめています。まだ実装していない
 将来の計画は[docs/roadmap.md](docs/roadmap.md)にあります。判断、感想、レビュー、
 bardの歌を残す共通の記録の決まり（VRP v2）は
-[docs/records-protocol.md](docs/records-protocol.md)にあります。自分の
+[docs/records-protocol.md](docs/records-protocol.md)にあります。agentの間の依頼と応答の決まりは[docs/liaison-protocol.md](docs/liaison-protocol.md)にあります。自分の
 Agent Canvas / OpenHands 環境でプラグインを動かす際の実践的な指針は
 [docs/agent-canvas.md](docs/agent-canvas.md)にあります。
 
