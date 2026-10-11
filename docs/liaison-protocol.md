@@ -40,9 +40,10 @@ UX-creator-agent; every sister ships an inbox/respond implementation
 | `gate_verdicts[]` | `{gate, verdict}` with `verdict` in `pass`, `fail`, `unknown` |
 | `decision_refs[]`, `impression_refs[]` | VRP v2 event ids that justify the answer |
 | `questions_for_user[]` | questions only the user can answer |
+| `records_heads` | optional `{kind: event_id}` chain head of each intact VRP log of the responder at answer time (`0`×64 for an empty log); a response without it is read as legacy |
 | `responded_at` | timestamp |
 
-A `done` response must carry artifacts, gate verdicts and VRP references.
+A `done` response must carry artifacts, gate verdicts and VRP references. The responder refuses `done` while any of its VRP logs fails integrity.
 The sister's guard hook protects its response file; it never edits the
 request or another agent's inputs.
 
@@ -54,7 +55,7 @@ request or another agent's inputs.
 | `answered` | a valid response whose pins and references all check out |
 | `mismatched` | the responder is not the request's target agent |
 | `stale` | a request input changed, or the response's `input_hashes` do not match it |
-| `broken` | a delivered artifact is missing or changed, or a VRP reference does not resolve in an intact chain |
+| `broken` | a delivered artifact is missing or changed, a VRP reference does not resolve in an intact chain, or a `records_heads` head is no longer in the responder's intact log (the answered history was rewritten) |
 | `blocked` | a `depends_on` request is not answered yet |
 | `circular` | `depends_on` forms a cycle; the requests are never worked |
 
@@ -93,14 +94,15 @@ SLP v2は、UX-creatorが姉妹agentに作業を頼み、姉妹が答えるた�
   - ゲートの判定
   - 根拠になったVRPの記録のid
   - ユーザーへの質問
+  - 記録の鎖の先頭（`records_heads`。答えた時点の、壊れていない各ログの最後の記録のid。空のログは`0`が64個。無い応答は古い形式として読みます）
 
-  `done` で答える時は、成果物、ゲートの判定、記録のidが必須です。
+  `done` で答える時は、成果物、ゲートの判定、記録のidが必須です。自分の記録のログの鎖が1つでも壊れている間は、`done` で答えられません。
 - **状態**: UX-creatorは、依頼と応答を突き合わせて、次のどれかに分類します。`answered` 以外は、生産計画で不合格として扱います。
   - `open`: まだ答えが無い
   - `answered`: 正しく答えた
   - `mismatched`: 宛先でないagentが答えた
   - `stale`: 入力が変わった
-  - `broken`: 成果物が変わった、または記録のidが壊れていない鎖の中に見つからない
+  - `broken`: 成果物が変わった、記録のidが壊れていない鎖の中に見つからない、または `records_heads` の先頭が相手の壊れていないログに無くなった（答えた後に記録が書き換えられた）
   - `blocked`: 先に必要な依頼が答えられていない
   - `circular`: 依頼同士が互いを待っている
 - 応答は、姉妹のゲートの判定を報告するだけで、変えることはありません。待たずに、今あるもので答えます。他のagentが固定しているファイルを変える時は、ECR/ECOを通します。
