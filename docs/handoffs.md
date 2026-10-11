@@ -85,10 +85,15 @@ flowchart LR
   each sister's `liaison/` inbox; the sister answers with a response file
   that its guard hook protects. UX-creator detects circular request
   chains, so a request cannot bounce forever.
-- **VibeBB Record Protocol (VRP).** Each agent appends decisions, stage
-  impressions and vision reviews to `observations/<agent>/*.jsonl`. The
-  Stop hook refuses to end a session that owes a record at most twice,
-  then allows the stop and records what was missing.
+- **VibeBB Record Protocol (VRP v2).** Each agent appends hash-chained
+  decisions, stage impressions, vision reviews, read receipts, insight
+  status, blind-review reconciles and bard song receipts to
+  `observations/<agent>/*.jsonl`. A reader must answer a sister impression
+  it read, a disputed concern cannot be raised again on unchanged bytes,
+  and UX-creator's family hub shows concerns that cycle between agents.
+  The Stop hook refuses to end a session that owes a record at most twice,
+  then allows the stop and records what was missing. See
+  [records-protocol.md](records-protocol.md).
 - **document** reads sister agents, their artifacts and their records as
   typed sources for reports and launch material.
 
@@ -111,7 +116,6 @@ diagrams above when its code is merged.
 | simulation | circuit, mechanical | margin-driven change requests (direct, not via UX) |
 | UX | mechanical, production-engineering | industrial-design form, out-of-box experience for packaging |
 | all | all | engineering change request / order (ECR / ECO) and AI design reviews |
-| impressions | UX, bard, all sisters | read receipts, UX impression digest, bard songs delivered to sisters (VRP v2) |
 
 ## 日本語
 
@@ -136,6 +140,7 @@ liaisonのファイル、contractの欄）で確かめたものです。計画�
   待って止まるagentはありません。足りない入力は未解決として記録し、作業を
   続けます。
 
-図と表は英語の節を見てください。計画中の受け渡し（circuit → mechの基板外形と
+図と表は英語の節を見てください。agentの間の記録（VRP v2）の決まりは
+[records-protocol.md](records-protocol.md)にあります。計画中の受け渡し（circuit → mechの基板外形と
 部品高さ、bard → firmwareのcue再生、fpga → firmwareのレジスタマップ、設計変更
 （ECR/ECO）など）は、repositoryごとに実装し、mergeされた順に図へ移します。
